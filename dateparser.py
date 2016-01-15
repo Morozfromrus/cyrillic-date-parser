@@ -132,11 +132,13 @@ class DateParser(object):
         descr = re.findall(pattern, content)
 
         if ('через' in content) and len(descr) > 0:
-            if descr[0] == 'час' or re.match(r'\d{1,2}\W?ч', descr[0]):
-                if len(digits) > 0:
-                    date += timedelta(hours=int(digits[0]))
-                if len(digits) > 1:
-                    date += timedelta(minutes=int(digits[1]))
+            try:
+                hour_val_in_content = int(re.findall(r'(\d{1,2})\W?ч', content).pop())
+                date += timedelta(hours=hour_val_in_content)
+            except IndexError:
+                if (descr[0] == 'час'):
+                    date += timedelta(hours=1)
+
             if descr[0] == 'мин' or re.match(r'\d{1,2}\W?м', descr[0]) and 'мес' not in content:
                 if len(digits) > 0:
                     date += timedelta(minutes=int(digits[0]))
@@ -167,8 +169,12 @@ if __name__ == '__main__':
         },
         'get_time_by_digit_pattern': {
             'через 2 часа': (datetime.now() + timedelta(hours=1.9), datetime.now() + timedelta(hours=2.1)),
-            'через 2 часа 30 минут': (datetime.now() + timedelta(hours=2.4), datetime.now() + timedelta(hours=2.6)),
-            'через 5 минут': (datetime.now() + timedelta(minutes=4), datetime.now() + timedelta(minutes=6))
+            'через 5 минут': (datetime.now() + timedelta(minutes=4), datetime.now() + timedelta(minutes=6)),
+            'через час': (datetime.now() + timedelta(hours=0.9), datetime.now() + timedelta(hours=1.1)),
+            'через час и одну минуту': (datetime.now() + timedelta(hours=1), datetime.now() + timedelta(hours=1.1)),
+            'через час и 5 минут': (datetime.now() + timedelta(hours=1), datetime.now() + timedelta(hours=1.1)),
+            # 'через 2 ч 50 мин': (datetime.now() + timedelta(hours=2, minutes=49), datetime.now() + timedelta(hours=2, minutes=51)),
+            # 'через 2 часа 30 минут': (datetime.now() + timedelta(hours=2.4), datetime.now() + timedelta(hours=2.6)),
             # '12 часов': datetime(day=datetime.now().day, month=datetime.now().month, year=datetime.now().year, hour=12),
             # '1ч': datetime(day=datetime.now().day, month=datetime.now().month, year=datetime.now().year, hour=1),
             # 'в 15:17': datetime(day=datetime.now().day, month=datetime.now().month, year=datetime.now().year, hour=15, minute=17),
@@ -184,12 +190,16 @@ if __name__ == '__main__':
     }
 
     for method, cases in test_cases.iteritems():
-        methodToCall = getattr(DateParser, method)
+        method_to_call = getattr(DateParser, method)
         for initial, expected in cases.iteritems():
             try:
+                method_result = method_to_call(initial)
                 if isinstance(expected, tuple):
-                    assert methodToCall(initial) >= expected[0] and methodToCall(initial) <= expected[1]
+                    assert method_result >= expected[0] and method_result <= expected[1]
                 else:
-                    assert methodToCall(initial) == expected
+                    assert method_result == expected
             except AssertionError:
-                print 'Test failed for method %s: %s != %s' % (method, methodToCall(initial), expected)
+                print('*'*10)
+                print('Test failed for {method} called "{initial}"'.format(method=method, initial=initial))
+                print('%s != %s' % (method_result, expected))
+    print('I tested everything')
