@@ -1,0 +1,14 @@
+<html>
+    <head></head>
+    <body>
+        <h1>DateParser test form</h1>
+        <form action="/" method="POST">
+            <input id="content" name="content" type="text" value="{{content}}"/>
+            <input name="submit" type="submit" value="Submit"/>
+        </form>
+        {% if result %}
+        {{ result }}
+        {% endif %}
+        <script>document.getElementById('content').focus();</script>
+    </body>
+</html>

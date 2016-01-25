@@ -8,7 +8,7 @@ from dateutil.relativedelta import relativedelta
 
 class DateParser(object):
     @staticmethod
-    def replace_digit_reprs(content):
+    def replace_digit_reprs(content, idate):
         content = content.lower()
 
         dreprs = {
@@ -38,10 +38,10 @@ class DateParser(object):
         for dr, di in dreprs.iteritems():
             content = content.replace(dr, str(di))
 
-        return content
+        return (content, idate)
 
     @staticmethod
-    def get_date_by_digit_pattern(content):
+    def get_date_by_digit_pattern(content, idate):
         pattern = r'\d{1,2}.\d{1,2}.\d{4}'
         matches = re.findall(pattern, content)
 
@@ -53,7 +53,11 @@ class DateParser(object):
                 'month': int(lmatches[1]),
                 'year': int(lmatches[2])
             }
-        return datetime(**date)
+
+        if matches:
+            idate = datetime(**date)
+
+        return content, idate
 
     @staticmethod
     def get_date_by_string_repr(content):
@@ -73,7 +77,7 @@ class DateParser(object):
             'дек': 12
         }
 
-        pattern = ('(?:{month_regexp}' + ')|(?:{month_regexp}'.join([mrpr for mrpr in mreprs.keys()]) + ')').format(month_regexp='\d{1,2}\W*')
+        pattern = (r'(?:{month_regexp}' + ')|(?:{month_regexp}'.join([mrpr for mrpr in mreprs.keys()]) + ')').format(month_regexp='\d{1,2}\W*')
         matches = re.findall(pattern, content)
 
         for match in matches:
@@ -228,6 +232,15 @@ class DateParser(object):
 
         return date
 
+
+    def parse(self, content):
+        content = content.encode('utf-8', 'ignore')
+        idate = datetime.now()  # initial date
+        content, idate = self.replace_digit_reprs(content, idate)
+        content, idate = self.get_date_by_digit_pattern(content, idate)
+        return idate.strftime('%d %h %Y %H:%M:%S')
+
+
 if __name__ == '__main__':
     dp = DateParser()
     test_cases = {
@@ -307,7 +320,7 @@ if __name__ == '__main__':
     only_test_cases = dict()
     for method, cases in test_cases.iteritems():
         for initial, expected in cases.iteritems():
-            if re.match('^\!.*', initial):
+            if re.match(r'^\!.*', initial):
                 try:
                     only_test_cases[method][initial[1:]] = expected
                 except KeyError:
