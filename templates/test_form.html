@@ -2,13 +2,20 @@
     <head></head>
     <body>
         <h1>DateParser test form</h1>
-        <form action="/" method="POST">
+        <form action="/" method="GET">
             <input id="content" name="content" type="text" value="{{content}}"/>
-            <input name="submit" type="submit" value="Submit"/>
+            <input type="submit" value="Submit"/>
         </form>
         {% if result %}
         {{ result }}
         {% endif %}
+        <div style="width: 200px; border-top: 1px solid lightgray; margin-top: 5px;"></div>
+
+        {% for hi in history %}
+        <div style="margin: 2pt 0pt;">
+            &nbsp;<a href="#" onclick="document.location = '/?content=' + this.innerHTML">{{ hi }}</a><br />
+        </div>
+        {% endfor %}
         <script>document.getElementById('content').focus();</script>
     </body>
 </html>

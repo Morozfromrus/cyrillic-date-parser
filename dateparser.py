@@ -1,244 +1,47 @@
 # -*- coding: utf-8 -*-
 
 import re
-import operator
 from datetime import datetime, timedelta
-from dateutil.relativedelta import relativedelta
+from copy import copy
+
+from utils.replacedigitreprs import replace_digit_reprs
+from utils.digitpattern import digit_pattern
+from utils.strepr import str_repr
+from utils.relrepr import rel_repr
+from utils.reltime import rel_time
 
 
 class DateParser(object):
-    @staticmethod
-    def replace_digit_reprs(content, idate):
-        content = content.lower()
-
-        dreprs = {
-            'ноль': 0,
-            'один': 1,
-            'два': 2,
-            'три': 3,
-            'четыре': 4,
-            'пять': 5,
-            'шесть': 6,
-            'семь': 7,
-            'восемь': 8,
-            'девять': 9,
-            'десять': 10,
-            'одиннадцать': 11,
-            'двенадцать': 12,
-            'тринадцать': 13,
-            'четырнадцать': 14,
-            'пятнадцать': 15,
-            'шестнадцать': 16,
-            'семнадцать': 17,
-            'восемнадцать': 18,
-            'девятнадцать': 19,
-            'двадцать': 20
-        }
-
-        for dr, di in dreprs.iteritems():
-            content = content.replace(dr, str(di))
-
-        return (content, idate)
-
-    @staticmethod
-    def get_date_by_digit_pattern(content, idate):
-        pattern = r'\d{1,2}.\d{1,2}.\d{4}'
-        matches = re.findall(pattern, content)
-
-        for match in matches:
-            pattern = r'\d{1,4}'
-            lmatches = re.findall(pattern, match)
-            date = {
-                'day': int(lmatches[0]),
-                'month': int(lmatches[1]),
-                'year': int(lmatches[2])
-            }
-
-        if matches:
-            idate = datetime(**date)
-
-        return content, idate
-
-    @staticmethod
-    def get_date_by_string_repr(content):
-        mreprs = {
-            'янв': 1,
-            'фев': 2,
-            'мар': 3,
-            'апр': 4,
-            'мая': 5,
-            'май': 5,
-            'июн': 6,
-            'июл': 7,
-            'авг': 8,
-            'сен': 9,
-            'окт': 10,
-            'ноя': 11,
-            'дек': 12
-        }
-
-        pattern = (r'(?:{month_regexp}' + ')|(?:{month_regexp}'.join([mrpr for mrpr in mreprs.keys()]) + ')').format(month_regexp='\d{1,2}\W*')
-        matches = re.findall(pattern, content)
-
-        for match in matches:
-            pattern = r'\d{4}'  # year
-            year_matches = re.findall(pattern, content)
-            try:
-                year = int(year_matches.pop())
-            except IndexError:
-                year = datetime.now().year
-
-            pattern = ('(?:' + ')|(?:'.join([mrpr for mrpr in mreprs.keys()]) + ')')
-            month_matches = re.findall(pattern, match)
-            try:
-                month_sym = month_matches.pop()
-                month = mreprs[month_sym]
-            except IndexError:
-                month = datetime.now().month
-
-            pattern = r'\d{1,2}'
-            day_matches = re.findall(pattern, match)
-            try:
-                day = int(day_matches.pop())
-            except IndexError:
-                day = datetime.now().day
-
-            return datetime(day=day, month=month, year=year)
-
-    @staticmethod
-    def get_day_by_rel_repr(content):
-        rel_list = {
-            'позавчера': -2,
-            'вчера': -1,
-            'сегодня': 0,
-            'завтра': +1,
-            'послезавтра': +2
-        }
-        pattern = '(' + '|'.join(rel_list.keys()) + ')'
-        rel_matches = re.findall(pattern, content)
-        for rel_item in rel_matches:
-            if rel_item in rel_list:
-                days_inc = rel_list[rel_item]
-                break
-        return days_inc + datetime.now().day
-
-    @staticmethod
-    def get_time_by_digit_pattern(content):
-        date = datetime.now()
-        pattern = r'(\d{1,2}\W?ч|\d{1,2}\W?ч|в\W?\d{1,2}:\d{1,2}|в\W?\d{1,2}:\d{1,2}|\d{1,2}\W?ми|\d{1,2}\W?\d{1,2}\W?м|в\W?\d{1,2}|\d{1,2}:\d{1,2})'
-        pattern = r'(дней|лет|нед|год|мес|день|дня|час|мин|сек|\d{1,2}\W?м|\d{1,2}\W?ч)'
-        descr = re.findall(pattern, content)
-
-        flag_after = 'через' in content
-        flag_before = 'назад' in content
-
-        if flag_after:
-            oper = operator.add
-        elif flag_before:
-            oper = operator.sub
-        else:
-            def oper(date, tdelta):  # TODO optimize it!
-                total_secs = tdelta.total_seconds()
-                days = total_secs // 86400
-                secs_days = total_secs % 86400
-                hours = secs_days // 3600
-                secs_hours = secs_days % 3600
-                minutes =  secs_hours // 60
-                secs_minutes = secs_hours % 60
-                seconds = secs_minutes
-
-                result = datetime(
-                    year=date.year,
-                    month=date.month,
-                    day=date.day if days == 0 else int(days),
-                    hour=date.hour if hours == 0 else int(hours),
-                    minute=date.minute if minutes == 0 else int(minutes),
-                    second=date.second if seconds == 0 else int(seconds),
-                )
-
-                return result
-
-        try:
-            years_val_in_content = int(re.findall(r'(\d{1,2})\s?г', content).pop())
-            date = oper(date, relativedelta(years=years_val_in_content))
-        except IndexError:
-            if len(descr) > 0 and 'год' in descr[0]:
-                date = oper(date, relativedelta(years=1))
-
-        try:
-            weeks_val_in_content = int(re.findall(r'(\d{1,2})\s?нед', content).pop())
-            date = oper(date, timedelta(days=weeks_val_in_content*7))
-        except IndexError:
-            if len(descr) > 0 and 'нед' in descr[0]:
-                date = oper(date, timedelta(days=7))
-
-        try:
-            days_val_in_content = int(re.findall(r'(\d{1,2})\s?д', content).pop())
-            date = oper(date, timedelta(days=days_val_in_content))
-        except IndexError:
-            if descr and 'день' in descr[0]:
-                date = oper(date, timedelta(days=1))
-
-        try:
-            hour_val_in_content = int(re.findall(r'(\d{1,2})\s*ч', content).pop())
-            date = oper(date, timedelta(hours=hour_val_in_content))
-        except IndexError:
-            if descr and descr[0] == 'час':
-                date = oper(date, timedelta(hours=1))
-
-        try:
-            minutes_val_in_content = int(re.findall(r'(\d{1,2})\s*м', content).pop())
-            if 'мес' not in content:
-                date = oper(date, timedelta(minutes=minutes_val_in_content))
-        except IndexError:
-            if descr and descr[0] == 'мин':
-                date = oper(date, timedelta(minutes=1))
-            else:
-                if 'hour_val_in_content' in locals() \
-                   and not flag_after \
-                   and not flag_before:
-                    date = datetime(year=date.year,
-                                    month=date.month,
-                                    day=date.day,
-                                    hour=date.hour,
-                                    minute=0,
-                                    second=0)
-
-        try:
-            seconds_val_in_content = int(re.findall(r'(\d{1,2})\s*с', content).pop())
-            date = oper(date, timedelta(seconds=seconds_val_in_content))
-        except IndexError:
-            if descr and descr[0] == 'сек':
-                date = oper(date, timedelta(seconds=1))
-            else:
-                if ('hour_val_in_content' in locals() or \
-                   'minutes_val_in_content' in locals()) \
-                   and not flag_after \
-                   and not flag_before:
-                    date = datetime(year=date.year,
-                                    month=date.month,
-                                    day=date.day,
-                                    hour=date.hour,
-                                    minute=date.minute,
-                                    second=0)
-
-        times = re.findall(r'(\d{1,2}):(\d{1,2})', content)
-        if times:
-            date = datetime(year=date.year,
-                            month=date.month,
-                            day=date.day,
-                            hour=int(times[0][0]),
-                            minute=int(times[0][1]))
-
-        return date
-
-
     def parse(self, content):
         content = content.encode('utf-8', 'ignore')
+        content = content.lower()
         idate = datetime.now()  # initial date
-        content, idate = self.replace_digit_reprs(content, idate)
-        content, idate = self.get_date_by_digit_pattern(content, idate)
-        return idate.strftime('%d %h %Y %H:%M:%S')
+        ov = (copy(content), copy(idate))
+        content, idate = replace_digit_reprs(content, idate)
+        if ov[0] != content or ov[1] != idate:
+            ov = (copy(content), copy(idate))
+            print 'replace_digit_reprs'
+        content, idate = digit_pattern(content, idate)
+        if ov[0] != content or ov[1] != idate:
+            ov = (copy(content), copy(idate))
+            print 'digit_pattern'
+
+        content, idate = str_repr(content, idate)
+        if ov[0] != content or ov[1] != idate:
+            ov = (copy(content), copy(idate))
+            print 'str_repr'
+
+        content, idate = rel_repr(content, idate)
+        if ov[0] != content or ov[1] != idate:
+            ov = (copy(content), copy(idate))
+            print 'rel_repr'
+
+        content, idate = rel_time(content, idate)
+        if ov[0] != content or ov[1] != idate:
+            ov = (copy(content), copy(idate))
+            print 'rel_time'
+
+        return idate.strftime('%d %h %Y %H:%M')
 
 
 if __name__ == '__main__':
