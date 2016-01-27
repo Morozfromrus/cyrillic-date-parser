@@ -29,8 +29,7 @@ def index():
     content = request.values.get('content')
     if content:
         dp = DateParser()
-        # ucontent = content.encode('utf-8')
-        if content in history:
+s        if content in history:
             history.remove(content)
         history.append(content)
         result = dp.parse(content)
@@ -40,6 +39,8 @@ def index():
         print(hi.encode('utf-8'), file=hf)
     hf.close()
 
+    history.reverse()
+    history = history[:15]
     return render_template('test_form.html', result=result, content=content, history=history)
 
 if __name__ == '__main__':
