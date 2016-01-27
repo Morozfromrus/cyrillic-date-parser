@@ -1,9 +1,23 @@
 <html>
-    <head></head>
+    <head>
+        <style>
+         a {
+             font-size: 14px;
+             text-decoration: none;
+             border-bottom: 1px solid;
+             color: #008ACE;
+         }
+
+         a:hover {
+             color: #CC0000;
+             border-color: #f0b2b2 !important;
+         }
+        </style>
+    </head>
     <body>
         <h1>DateParser test form</h1>
         <form action="/" method="GET">
-            <input id="content" name="content" type="text" value="{{content}}"/>
+            <input id="content" name="content" type="text" value="{{content}}" style="width: 500px;"/>
             <input type="submit" value="Submit"/>
         </form>
         {% if result %}
@@ -11,11 +25,13 @@
         {% endif %}
         <div style="width: 200px; border-top: 1px solid lightgray; margin-top: 5px;"></div>
 
+        <ol style="font-size: 14px;">
         {% for hi in history %}
-        <div style="margin: 2pt 0pt;">
-            &nbsp;<a href="#" onclick="document.location = '/?content=' + this.innerHTML">{{ hi }}</a><br />
-        </div>
+            <li style="height: 25px;">
+                <a href="#" onclick="document.location = '/?content=' + this.innerHTML">{{ hi }}</a>
+            </li>
         {% endfor %}
+        </ol>
         <script>document.getElementById('content').focus();</script>
     </body>
 </html>

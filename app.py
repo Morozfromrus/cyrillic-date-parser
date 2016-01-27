@@ -29,7 +29,7 @@ def index():
     content = request.values.get('content')
     if content:
         dp = DateParser()
-s        if content in history:
+        if content in history:
             history.remove(content)
         history.append(content)
         result = dp.parse(content)
