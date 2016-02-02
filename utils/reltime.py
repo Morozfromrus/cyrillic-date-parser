@@ -22,7 +22,7 @@ def rel_time(content, idate):
     else:
         def oper(date, tdelta):  # TODO optimize it!
             result = datetime(
-                year=date.year + tdelta.years,
+                year=tdelta.years,
                 month=date.month + tdelta.months,
                 day=date.day + tdelta.days,
                 hour=tdelta.hours,
@@ -32,7 +32,7 @@ def rel_time(content, idate):
             return result
 
     try:
-        years_val_in_content = int(re.findall(r'(\d{1,2})\s?г', content).pop())
+        years_val_in_content = int(re.findall(r'(\d{4})\s?г', content).pop())
         date = oper(date, relativedelta(years=years_val_in_content))
     except IndexError:
         if len(descr) > 0 and 'год' in descr[0]:

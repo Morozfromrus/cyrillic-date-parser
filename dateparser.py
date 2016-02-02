@@ -10,11 +10,18 @@ from utils.strepr import str_repr
 from utils.relrepr import rel_repr
 from utils.reltime import rel_time
 
+# patterns = [
+#     '{day}.{month}.{year}',
+#     '{year} {day}.{month}',
+# ]
+
 
 class DateParser(object):
     def parse(self, content):
-        content = content.encode('utf-8', 'ignore')
+        print '-'*100
+        print content
         content = content.lower()
+        content = content.encode('utf-8', 'ignore')
         idate = datetime.now()  # initial date
         ov = (copy(content), copy(idate))
         content, idate = replace_digit_reprs(content, idate)
@@ -33,13 +40,17 @@ class DateParser(object):
 
         content, idate = rel_repr(content, idate)
         if ov[0] != content or ov[1] != idate:
+            print 'rel_repr:'
+            print 'was: {content}, {date}'.format(content=ov[0], date=ov[1])
+            print 'then: {content}, {date}'.format(content=content, date=idate)
             ov = (copy(content), copy(idate))
-            print 'rel_repr'
 
         content, idate = rel_time(content, idate)
         if ov[0] != content or ov[1] != idate:
+            print 'rel_time:'
+            print 'was: {content}, {date}'.format(content=ov[0], date=ov[1])
+            print 'then: {content}, {date}'.format(content=content, date=idate)
             ov = (copy(content), copy(idate))
-            print 'rel_time'
 
         return idate.strftime('%d %h %Y %H:%M')
 
