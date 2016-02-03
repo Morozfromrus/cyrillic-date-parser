@@ -23,6 +23,7 @@ class DateParser(object):
             print 'Message = {msg}'.format(msg=exc.message)
         return result
 
+    @staticmethod
     def __main_parse_logic__(content, pattern=None):
         content = content.lower()
         content = content.encode('utf-8', 'ignore')
