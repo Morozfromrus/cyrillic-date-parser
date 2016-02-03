@@ -3,7 +3,7 @@ from datetime import datetime
 
 
 def digit_pattern(content, idate):
-        pattern = r'\d{1,2}.\d{1,2}.\d{2,4}'
+        pattern = r'\d{1,2}\.\d{1,2}\.\d{2,4}'
         matches = re.findall(pattern, content)
 
         for match in matches:

@@ -10,11 +10,6 @@ from utils.strepr import str_repr
 from utils.relrepr import rel_repr
 from utils.reltime import rel_time
 
-# patterns = [
-#     '{day}.{month}.{year}',
-#     '{year} {day}.{month}',
-# ]
-
 
 class DateParser(object):
     @staticmethod
@@ -25,33 +20,29 @@ class DateParser(object):
         print content
         idate = datetime.now()  # initial date
         ov = (copy(content), copy(idate))
-        content, idate = replace_digit_reprs(content, idate)
-        if ov[0] != content or ov[1] != idate:
-            ov = (copy(content), copy(idate))
-            print 'replace_digit_reprs'
-        content, idate = digit_pattern(content, idate)
-        if ov[0] != content or ov[1] != idate:
-            ov = (copy(content), copy(idate))
-            print 'digit_pattern'
 
-        content, idate = str_repr(content, idate)
-        if ov[0] != content or ov[1] != idate:
-            ov = (copy(content), copy(idate))
-            print 'str_repr'
+        if pattern:
+            def custom_pattern(content, idate):
+                # groups = re.match(content, pattern)
+                return content, idate
+        else:
+            def custom_pattern(content, idate):
+                return content, idate
 
-        content, idate = rel_repr(content, idate)
-        if ov[0] != content or ov[1] != idate:
-            print 'rel_repr:'
-            print 'was: {content}, {date}'.format(content=ov[0], date=ov[1])
-            print 'then: {content}, {date}'.format(content=content, date=idate)
-            ov = (copy(content), copy(idate))
+        registered_patterns = [replace_digit_reprs,
+                               custom_pattern,
+                               digit_pattern,
+                               str_repr,
+                               rel_repr,
+                               rel_time]
 
-        content, idate = rel_time(content, idate)
-        if ov[0] != content or ov[1] != idate:
-            print 'rel_time:'
-            print 'was: {content}, {date}'.format(content=ov[0], date=ov[1])
-            print 'then: {content}, {date}'.format(content=content, date=idate)
-            ov = (copy(content), copy(idate))
+        for rp in registered_patterns:
+            content, idate = rp(content, idate)
+            if ov[0] != content or ov[1] != idate:
+                ov = (copy(content), copy(idate))
+                print rp.__name__
+                print 'was: {content}, {date}'.format(content=ov[0], date=ov[1])
+                print 'then: {content}, {date}'.format(content=content, date=idate)
 
         return '%04d-%02d-%02dT%02d:%02d:%02d' % (idate.year,
                                                   idate.month,
