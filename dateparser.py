@@ -33,16 +33,25 @@ class DateParser(object):
         idate = datetime.now()  # initial date
 
         def custom_pattern(pattern):
-            def def_pattern(content, idate):
-                groups = re.match(pattern, content).groupdict()
-                idate = datetime(year=int(groups.get('year', idate.year)),
-                                 month=int(groups.get('month', idate.month)),
-                                 day=int(groups.get('day', idate.day)),
-                                 hour=int(groups.get('hour', idate.hour)),
-                                 minute=int(groups.get('minute', idate.minute)),
-                                 second=int(groups.get('second', idate.second)))
-                return content, idate
-            return def_pattern
+            if pattern:
+                def def_pattern(content, idate):
+                    try:
+                        groups = re.match(pattern, content).groupdict()
+                    except AttributeError:
+                        return content, idate
+
+                    idate = datetime(year=int(groups.get('year', idate.year)),
+                                     month=int(groups.get('month', idate.month)),
+                                     day=int(groups.get('day', idate.day)),
+                                     hour=int(groups.get('hour', idate.hour)),
+                                     minute=int(groups.get('minute', idate.minute)),
+                                     second=int(groups.get('second', idate.second)))
+                    return content, idate
+                return def_pattern
+            else:
+                def null_pattern(content, idate):
+                    return content, idate
+                return null_pattern
 
         registered_patterns = [replace_digit_reprs,
                                custom_pattern(pattern),
@@ -50,6 +59,7 @@ class DateParser(object):
                                str_repr,
                                rel_repr,
                                rel_time]
+
         ov = (copy(content), copy(idate))
         for rp in registered_patterns:
             content, idate = rp(content, idate)
