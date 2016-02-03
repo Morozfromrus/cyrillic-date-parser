@@ -70,13 +70,12 @@ class DateParser(object):
                                rel_repr,
                                rel_time]
 
-        ov = (copy(content), copy(idate))
         for rp in registered_patterns:
+            ov = (copy(content), copy(idate))
             content, idate = rp(content, idate)
             if rp.__name__ == 'def_pattern' and pattern:
                 break
             if ov[0] != content or ov[1] != idate:
-                ov = (copy(content), copy(idate))
                 print rp.__name__
                 print 'was: {content}, {date}'.format(content=ov[0], date=ov[1])
                 print 'then: {content}, {date}'.format(content=content, date=idate)

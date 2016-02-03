@@ -32,7 +32,7 @@ def rel_time(content, idate):
             return result
 
     try:
-        years_val_in_content = int(re.findall(r'(\d{2,4})\s?г', content).pop())
+        years_val_in_content = int(re.findall(r'(\d+)\s?г', content).pop())
         if len(str(years_val_in_content)) == 2:
             years_val_in_content = int('20{year}'.format(year=years_val_in_content))
         date = oper(date, relativedelta(years=years_val_in_content))
@@ -41,28 +41,28 @@ def rel_time(content, idate):
             date = oper(date, relativedelta(years=1))
 
     try:
-        weeks_val_in_content = int(re.findall(r'(\d{1,2})\s?нед', content).pop())
+        weeks_val_in_content = int(re.findall(r'(\d+)\s?нед', content).pop())
         date = oper(date, relativedelta(days=weeks_val_in_content*7))
     except IndexError:
         if len(descr) > 0 and 'нед' in descr[0]:
             date = oper(date, relativedelta(days=7))
 
     try:
-        days_val_in_content = int(re.findall(r'(\d{1,2})\s?д', content).pop())
+        days_val_in_content = int(re.findall(r'(\d+)\s?д', content).pop())
         date = oper(date, relativedelta(days=days_val_in_content))
     except IndexError:
         if descr and 'день' in descr[0]:
             date = oper(date, relativedelta(days=1))
 
     try:
-        hour_val_in_content = int(re.findall(r'(\d{1,2})\s*ч', content).pop())
+        hour_val_in_content = int(re.findall(r'(\d+)\s*ч', content).pop())
         date = oper(date, relativedelta(hours=hour_val_in_content))
     except IndexError:
         if descr and descr[0] == 'час':
             date = oper(date, relativedelta(hours=1))
 
     try:
-        minutes_val_in_content = int(re.findall(r'(\d{1,2})\s*м', content).pop())
+        minutes_val_in_content = int(re.findall(r'(\d+)\s*м', content).pop())
         if 'мес' not in content:
             date = oper(date, relativedelta(minutes=minutes_val_in_content))
     except IndexError:
@@ -80,7 +80,7 @@ def rel_time(content, idate):
                                 second=0)
 
     try:
-        seconds_val_in_content = int(re.findall(r'(\d{1,2})\s*с', content).pop())
+        seconds_val_in_content = int(re.findall(r'(\d+)\s*с', content).pop())
         date = oper(date, relativedelta(seconds=seconds_val_in_content))
     except IndexError:
         if descr and descr[0] == 'сек':
