@@ -19,7 +19,7 @@ class DateParser(object):
         except Exception, exc:
             print 'Error catched:'
             print 'Content = {content}'.format(content=content.encode('utf-8', 'ignore'))
-            print 'Pattern = {pattern}'.format(pattern=pattern.encode('utf-8', 'ignore'))
+            # print 'Pattern = {pattern}'.format(pattern=pattern.encode('utf-8', 'ignore'))
             print 'Message = {msg}'.format(msg=exc.message)
             raise
         return result
