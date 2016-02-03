@@ -36,7 +36,7 @@ class DateParser(object):
             if pattern:
                 def def_pattern(content, idate):
                     try:
-                        groups = re.match(pattern, content).groupdict()
+                        groups = re.search(pattern, content).groupdict()
                     except AttributeError:
                         return content, idate
 
