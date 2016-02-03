@@ -18,8 +18,8 @@ class DateParser(object):
             result = cls.__main_parse_logic__(content, pattern)
         except Exception, exc:
             print 'Error catched:'
-            print 'Content = {content}'.format(content=content)
-            print 'Pattern = {pattern}'.format(pattern=pattern)
+            print 'Content = {content}'.format(content=content.encode('utf-8', 'ignore'))
+            print 'Pattern = {pattern}'.format(pattern=pattern.encode('utf-8', 'ignore'))
             print 'Message = {msg}'.format(msg=exc.message)
             raise
         return result
