@@ -12,8 +12,18 @@ from utils.reltime import rel_time
 
 
 class DateParser(object):
-    @staticmethod
-    def parse(content, pattern=None):
+    @classmethod
+    def parse(cls, content, pattern=None):
+        try:
+            result = cls.__main_parse_logic__(content, pattern)
+        except Exception, exc:
+            print 'Error catched:'
+            print 'Content = {content}'.format(content=content)
+            print 'Pattern = {pattern}'.format(pattern=pattern)
+            print 'Message = {msg}'.format(msg=exc.message)
+        return result
+
+    def __main_parse_logic__(content, pattern=None):
         content = content.lower()
         content = content.encode('utf-8', 'ignore')
         print '-'*100
@@ -55,7 +65,6 @@ class DateParser(object):
                                                   idate.hour,
                                                   idate.minute,
                                                   idate.second)
-
 
 if __name__ == '__main__':
     dp = DateParser()
