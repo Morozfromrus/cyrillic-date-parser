@@ -22,12 +22,12 @@ def rel_time(content, idate):
     else:
         def oper(date, tdelta):  # TODO optimize it!
             result = datetime(
-                year=tdelta.years,
-                month=date.month + tdelta.months,
-                day=date.day + tdelta.days,
-                hour=tdelta.hours,
-                minute=tdelta.minutes,
-                second=tdelta.seconds,
+                year=tdelta.years if tdelta.years else date.year,
+                month=tdelta.months if tdelta.months else date.month,
+                day=tdelta.days if tdelta.days else date.day,
+                hour=tdelta.hours if tdelta.hours else date.hour,
+                minute=tdelta.minutes if tdelta.minutes else date.minute,
+                second=tdelta.seconds if tdelta.seconds else date.second
             )
             return result
 

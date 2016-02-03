@@ -25,12 +25,11 @@
         <form action="/" method="GET">
             <p>
                 <label for="content">Текст
-                    <input value="{{content}}" id="content" list="history" name="content" class="myinput"/></label>
+                    <input list="history" name="content" class="myinput"/></label>
                 <datalist id="history">
-                  {% for hi in history %}
-                  <option value="{{ hi }}"/>
-                  {% endfor %}
-                </datalist>
+                  {% for item in history %}
+                        <option value="Chrome"/>
+                    </datalist>
             </p>
             <p>
                 <label for="pattern">Паттерн</label>
@@ -42,6 +41,14 @@
         {{ result }}
         {% endif %}
         <div style="width: 200px; border-top: 1px solid lightgray; margin-top: 5px;"></div>
-        <script>document.getElementById('content').focus(); document.getElementById('content').select();</script>
+
+        <ol style="font-size: 14px;">
+        {% for hi in history %}
+            <li style="height: 25px;">
+                <a href="#" onclick="document.location = '/?content=' + this.innerHTML">{{ hi }}</a>
+            </li>
+        {% endfor %}
+        </ol>
+        <script>document.getElementById('content').focus();</script>
     </body>
 </html>

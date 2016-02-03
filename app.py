@@ -17,8 +17,7 @@ def index():
     result = ''
     content = ''
     history = []
-    filename = 'history.txt'
-
+    filename = '/tmp/datetime-parser-history.txt'
     if os.path.isfile(filename):
         hf = open(filename, 'r+')
     else:
@@ -40,7 +39,7 @@ def index():
     hf.close()
 
     history.reverse()
-    history = history[:15]
+    history = history[:500]
     return render_template('test_form.html', result=result, content=content, history=history)
 
 if __name__ == '__main__':

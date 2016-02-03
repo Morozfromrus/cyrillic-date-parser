@@ -17,11 +17,12 @@ from utils.reltime import rel_time
 
 
 class DateParser(object):
-    def parse(self, content):
-        print '-'*100
-        print content
+    @staticmethod
+    def parse(content, pattern=None):
         content = content.lower()
         content = content.encode('utf-8', 'ignore')
+        print '-'*100
+        print content
         idate = datetime.now()  # initial date
         ov = (copy(content), copy(idate))
         content, idate = replace_digit_reprs(content, idate)
@@ -52,7 +53,12 @@ class DateParser(object):
             print 'then: {content}, {date}'.format(content=content, date=idate)
             ov = (copy(content), copy(idate))
 
-        return idate.strftime('%d %h %Y %H:%M')
+        return '%04d-%02d-%02dT%02d:%02d:%02d' % (idate.year,
+                                                  idate.month,
+                                                  idate.day,
+                                                  idate.hour,
+                                                  idate.minute,
+                                                  idate.second)
 
 
 if __name__ == '__main__':
