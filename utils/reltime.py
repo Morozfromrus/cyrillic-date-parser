@@ -32,7 +32,9 @@ def rel_time(content, idate):
             return result
 
     try:
-        years_val_in_content = int(re.findall(r'(\d{4})\s?г', content).pop())
+        years_val_in_content = int(re.findall(r'(\d{2,4})\s?г', content).pop())
+        if len(str(years_val_in_content)) == 2:
+            years_val_in_content = int('20{year}'.format(year=years_val_in_content))
         date = oper(date, relativedelta(years=years_val_in_content))
     except IndexError:
         if len(descr) > 0 and 'год' in descr[0]:
