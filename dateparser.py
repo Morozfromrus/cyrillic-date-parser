@@ -40,6 +40,16 @@ class DateParser(object):
                     except AttributeError:
                         return content, idate
 
+                    mreprs = {'янв': 1, 'фев': 2, 'мар': 3, 'апр': 4,
+                              'мая': 5, 'май': 5, 'июн': 6, 'июл': 7,
+                              'авг': 8, 'сен': 9, 'окт': 10, 'ноя': 11,
+                              'дек': 12}
+
+                    for mkey, mval in mreprs.iteritems():
+                        if mkey in groups.get('month'):
+                            groups['month'] = mval
+                            break
+
                     idate = datetime(year=int(groups.get('year', idate.year)),
                                      month=int(groups.get('month', idate.month)),
                                      day=int(groups.get('day', idate.day)),
