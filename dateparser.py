@@ -17,10 +17,10 @@ class DateParser(object):
         try:
             result = cls.__main_parse_logic__(content, pattern)
         except Exception, exc:
-            print u'Error catched:'
-            print u'Content = {content}'.format(content=content)
-            print u'Pattern = {pattern}'.format(pattern=pattern)
-            print u'Message = {msg}'.format(msg=exc.message)
+            print 'Error catched:'
+            print 'Content = {content}'.format(content=content)
+            print 'Pattern = {pattern}'.format(pattern=pattern)
+            print 'Message = {msg}'.format(msg=exc.message)
             raise
         return result
 
