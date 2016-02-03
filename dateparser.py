@@ -19,25 +19,30 @@ class DateParser(object):
         print '-'*100
         print content
         idate = datetime.now()  # initial date
-        ov = (copy(content), copy(idate))
 
-        if pattern:
-            def custom_pattern(content, idate):
-                # groups = re.match(content, pattern)
+        def custom_pattern(pattern):
+            def def_pattern(content, idate):
+                groups = re.match(pattern, content).groupdict()
+                idate = datetime(year=int(groups.get('year', idate.year)),
+                                 month=int(groups.get('month', idate.month)),
+                                 day=int(groups.get('day', idate.day)),
+                                 hour=int(groups.get('hour', idate.hour)),
+                                 minute=int(groups.get('minute', idate.minute)),
+                                 second=int(groups.get('second', idate.second)))
                 return content, idate
-        else:
-            def custom_pattern(content, idate):
-                return content, idate
+            return def_pattern
 
         registered_patterns = [replace_digit_reprs,
-                               custom_pattern,
+                               custom_pattern(pattern),
                                digit_pattern,
                                str_repr,
                                rel_repr,
                                rel_time]
-
+        ov = (copy(content), copy(idate))
         for rp in registered_patterns:
             content, idate = rp(content, idate)
+            if rp.__name__ == 'def_pattern' and pattern:
+                break
             if ov[0] != content or ov[1] != idate:
                 ov = (copy(content), copy(idate))
                 print rp.__name__
