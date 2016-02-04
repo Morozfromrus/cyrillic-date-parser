@@ -40,4 +40,6 @@ def str_repr(content, idate):
 
         idate = datetime(day=day, month=month, year=year, hour=idate.hour, minute=idate.minute, second=idate.second)
 
+        break
+
     return (content, idate)
