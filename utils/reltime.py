@@ -9,7 +9,7 @@ from datetime import datetime
 def rel_time(content, idate):
     date = idate
     pattern = r'(\d{1,2}\W?ч|\d{1,2}\W?ч|в\W?\d{1,2}:\d{1,2}|в\W?\d{1,2}:\d{1,2}|\d{1,2}\W?ми|\d{1,2}\W?\d{1,2}\W?м|в\W?\d{1,2}|\d{1,2}:\d{1,2})'
-    pattern = r'(дней|лет|нед|год|мес|день|дня|час|мин|сек|\d{1,2}\W?м|\d{1,2}\W?ч)'
+    pattern = r'(?:\s|^)(дней|лет|нед|год|мес|день|дня|час|мин|сек|\d{1,2}\W?м|\d{1,2}\W?ч)(?:\s|$)'
     descr = re.findall(pattern, content)
 
     flag_after = 'через' in content
@@ -48,7 +48,7 @@ def rel_time(content, idate):
             date = oper(date, relativedelta(days=7))
 
     try:
-        days_val_in_content = int(re.findall(r'(\d+)\s?д', content).pop())
+        days_val_in_content = int(re.findall(r'(\d+)\s?дн', content).pop())
         date = oper(date, relativedelta(days=days_val_in_content))
     except IndexError:
         if descr and 'день' in descr[0]:
@@ -96,13 +96,5 @@ def rel_time(content, idate):
                                 hour=date.hour,
                                 minute=date.minute,
                                 second=0)
-
-    times = re.findall(r'(\d{1,2}):(\d{1,2})', content)
-    if times:
-        date = datetime(year=date.year,
-                        month=date.month,
-                        day=date.day,
-                        hour=int(times[0][0]),
-                        minute=int(times[0][1]))
 
     return (content, date)
