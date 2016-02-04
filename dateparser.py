@@ -4,7 +4,7 @@ import re
 from datetime import datetime, timedelta
 from dateutil.relativedelta import relativedelta
 from copy import copy
-
+from testcases import testcases
 from utils.replacedigitreprs import replace_digit_reprs
 from utils.digitpattern import digit_pattern
 from utils.strepr import str_repr
@@ -108,57 +108,9 @@ class DateParser(object):
 
 if __name__ == '__main__':
     dp = DateParser()
-    test_cases = {
-        # u'12.06.1975': datetime(day=12, month=6, year=1975),
-        # u'01.01.2015': datetime(day=1, month=1, year=2015),
-        # u'1 января': datetime(day=1, month=1, year=datetime.now().year),
-        # u'28 февраля': datetime(day=28, month=2, year=datetime.now().year),
-        u'28 февраля 2015 года': (datetime(day=28, month=2, year=2015), datetime(day=1, month=3, year=2015)),
-        # u'позавчера': (datetime.now() - relativedelta(hours=48), datetime.now() - relativedelta(hours=49)),
-        # u'вчера': (datetime.now() - timedelta(hours=23), datetime.now() - timedelta(hours=25)),
-        # u'сегодня': (datetime.now() - timedelta(hours=1), datetime.now() + timedelta(hours=1)),
-        # u'завтра': (datetime.now() + timedelta(hours=23), datetime.now() + timedelta(hours=25)),
-        # u'послезавтра': datetime.now().day+2,
-        u'через 2 часа': (datetime.now() + timedelta(hours=1.9), datetime.now() + timedelta(hours=2.1)),
-        u'через 2  часа': (datetime.now() + timedelta(hours=1.9), datetime.now() + timedelta(hours=2.1)),
-        u'через 5 минут': (datetime.now() + timedelta(minutes=4), datetime.now() + timedelta(minutes=6)),
-        u'через 5     минут': (datetime.now() + timedelta(minutes=4), datetime.now() + timedelta(minutes=6)),
-        u'через час': (datetime.now() + timedelta(hours=0.9), datetime.now() + timedelta(hours=1.1)),
-        # u'через час и одну минуту': (datetime.now() + timedelta(hours=1), datetime.now() + timedelta(hours=1.1)),
-        u'через час и 5 минут': (datetime.now() + timedelta(hours=1), datetime.now() + timedelta(hours=1.1)),
-        u'через 2 ч': (datetime.now() + timedelta(hours=1.9), datetime.now() + timedelta(hours=2.1)),
-        u'через 2 ч 50 мин': (datetime.now() + timedelta(hours=2, minutes=49), datetime.now() + timedelta(hours=2, minutes=51)),
-        u'через 2 часа 30 минут': (datetime.now() + timedelta(hours=2.4), datetime.now() + timedelta(hours=2.6)),
-        u'через 1 день': (datetime.now() + timedelta(days=0.9), datetime.now() + timedelta(days=1.1)),
-        u'через 4 дня': (datetime.now() + timedelta(days=3.9), datetime.now() + timedelta(days=4.1)),
-        u'через 5 дней': (datetime.now() + timedelta(days=4.9), datetime.now() + timedelta(days=5.1)),
-        u'через 3 недели': (datetime.now() + timedelta(weeks=2.9), datetime.now() + timedelta(weeks=3.1)),
-        # u'через неделю': (datetime.now() + timedelta(weeks=0.9), datetime.now() + timedelta(weeks=1.1)),
-        u'2 ч назад': (datetime.now() - timedelta(hours=2.1), datetime.now() - timedelta(hours=1.9)),
-        u'2 ч 50 мин назад': (datetime.now() - timedelta(hours=2, minutes=51), datetime.now() - timedelta(hours=2, minutes=49)),
-        u'2 часа 30 минут назад': (datetime.now() - timedelta(hours=2, minutes=31), datetime.now() - timedelta(hours=2, minutes=29)),
-        u'1 день назад': (datetime.now() - timedelta(days=1.1), datetime.now() - timedelta(days=0.9)),
-        u'4 дня назад': (datetime.now() - timedelta(days=4.1), datetime.now() - timedelta(days=3.9)),
-        u'5 дней назад': (datetime.now() - timedelta(days=5.1), datetime.now() - timedelta(days=4.9)),
-        u'3 недели назад': (datetime.now() - timedelta(weeks=3.1), datetime.now() - timedelta(weeks=2.9)),
-        u'12 часов': datetime(day=datetime.now().day, month=datetime.now().month, year=datetime.now().year, hour=12),
-        u'1ч': datetime(day=datetime.now().day, month=datetime.now().month, year=datetime.now().year, hour=1),
-        u'в 15:17': datetime(day=datetime.now().day, month=datetime.now().month, year=datetime.now().year, hour=15, minute=17),
-        u'в19:26': datetime(day=datetime.now().day, month=datetime.now().month, year=datetime.now().year, hour=19, minute=26),
-        u'2часа 53 минуты': (datetime(day=datetime.now().day, month=datetime.now().month, year=datetime.now().year, hour=2, minute=52),
-                             datetime(day=datetime.now().day, month=datetime.now().month, year=datetime.now().year, hour=2, minute=54)),
-        u'5 часов 20минут': datetime(day=datetime.now().day, month=datetime.now().month, year=datetime.now().year, hour=5, minute=20),
-        u'14:10': datetime(day=datetime.now().day, month=datetime.now().month, year=datetime.now().year, hour=14, minute=10),
-        u'в 10 часов 50 минут': datetime(day=datetime.now().day, month=datetime.now().month, year=datetime.now().year, hour=10, minute=50),
-        u'через 2 года': (datetime.now() + relativedelta(years=2) - relativedelta(hours=1),
-                          datetime.now() + relativedelta(years=2) + relativedelta(hours=1)),
-        u'2 года назад': (datetime.now() - relativedelta(years=2, hours=1),
-                          datetime.now() - relativedelta(years=2) + relativedelta(hours=1)),
-        u'11:47 ДНК естественные и точные науки физика химия': datetime(day=datetime.now().day, month=datetime.now().month, year=datetime.now().year, hour=11, minute=47),
-    }
 
     only_test_cases = dict()
-    for initial, expected in test_cases.iteritems():
+    for initial, expected in testcases.iteritems():
         if re.match(r'^\!.*', initial):
             try:
                 only_test_cases[initial[1:]] = expected
@@ -167,12 +119,12 @@ if __name__ == '__main__':
                 only_test_cases[initial[1:]] = expected
 
     if only_test_cases:
-        test_cases = only_test_cases
+        testcases = only_test_cases
 
     tcnt, tsuc, terr = 0, 0, 0
 
     method_to_call = DateParser.parse
-    for initial, expected in test_cases.iteritems():
+    for initial, expected in testcases.iteritems():
         try:
             method_result = method_to_call(initial)
             method_result = datetime.strptime(method_result, '%Y-%m-%dT%H:%M:%S')
