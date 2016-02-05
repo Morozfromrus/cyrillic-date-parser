@@ -5,6 +5,7 @@ from datetime import datetime
 def digit_pattern(content, idate):
     patterns = ['(?P<year>\d{4})\-(?P<month>\d{1,2})\-(?P<day>\d{1,2})t(?P<hour>\d{2})\:(?P<minute>\d{2})\:(?P<second>\d{2})',
                 '(?P<year>\d{4})\-(?P<month>\d{1,2})\-(?P<day>\d{1,2})\s(?P<hour>\d{2})\:(?P<minute>\d{2})',
+                '(?P<day>\d{1,2})\.(?P<month>\d{1,2})\.(?P<year>\d{4})\s(?P<hour>\d{2})\:(?P<minute>\d{2})',
                 '(?P<day>\d{1,2})\.(?P<month>\d{1,2})\.(?P<year>\d{4})',
                 '(?P<year>\d{4})\.(?P<month>\d{2})\.(?P<day>\d{2})',
                 '(?P<year>\d{4})\-(?P<month>\d{2})\-(?P<day>\d{2})',
