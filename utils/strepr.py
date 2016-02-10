@@ -38,8 +38,11 @@ def str_repr(content, idate):
         except IndexError:
             day = idate.day
 
-        idate = datetime(day=day, month=month, year=year, hour=idate.hour, minute=idate.minute, second=idate.second)
-
+        try:
+            idate = datetime(day=day, month=month, year=year, hour=idate.hour, minute=idate.minute, second=idate.second)
+        except ValueError as err:
+            err.message = err.message + '. Debug data: day={day}, month={month}, hour={hour}, minute={minute}, second={second}, content={content}'.format(day=day, month=month, hour=idate.hour, minute=idate.minute, second=idate.second, content=content)
+            raise
         break
 
     return (content, idate)
