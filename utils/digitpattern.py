@@ -7,6 +7,7 @@ def digit_pattern(content, idate):
                 '(?P<day>\d{1,2})\.(?P<month>\d{1,2})\.(?P<year>\d{4}).+(?P<hour>\d{2}):(?P<minute>\d{2})',
                 '(?P<year>\d{4})\-(?P<month>\d{1,2})\-(?P<day>\d{1,2})\s(?P<hour>\d{2})\:(?P<minute>\d{2})',
                 '(?P<day>\d{1,2})\.(?P<month>\d{1,2})\.(?P<year>\d{4})\s(?P<hour>\d{2})\:(?P<minute>\d{2})',
+                '(?P<day>\d{1,2})/(?P<month>\d{1,2})/(?P<year>\d{4})',
                 '(?P<day>\d{1,2})\.(?P<month>\d{1,2})\.(?P<year>\d{4})',
                 '(?P<year>\d{4})\.(?P<month>\d{2})\.(?P<day>\d{2})',
                 '(?P<year>\d{4})\-(?P<month>\d{2})\-(?P<day>\d{2})',
